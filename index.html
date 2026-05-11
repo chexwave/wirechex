@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WireChex v6.0 - The Ultimate Wire Diagram Maker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-slate-950 text-slate-200 font-sans">
+    <!-- Header -->
+    <div class="max-w-7xl mx-auto p-6">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-5xl font-extrabold tracking-tighter">WireChex v6.0</h1>
+                <p class="text-emerald-400 text-xl mt-1">v6.0 Production Ready • Professional Wire Diagrams • Built for Makers, Engineers & Dreamers</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="px-4 py-1.5 bg-emerald-500/10 text-emerald-400 rounded-2xl text-sm font-medium flex items-center gap-2">
+                    <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                    PRODUCTION READY
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="flex flex-wrap items-center gap-3 mb-6">
+            <!-- Grid Size -->
+            <div class="flex items-center gap-3 bg-slate-900 px-4 py-3 rounded-3xl">
+                <div>
+                    <label class="text-xs text-slate-400 block mb-1">Rows</label>
+                    <input id="grid-rows" type="number" value="20" class="w-20 bg-slate-800 text-center font-mono text-lg rounded-2xl py-1 px-3 border border-slate-700">
+                </div>
+                <div>
+                    <label class="text-xs text-slate-400 block mb-1">Columns</label>
+                    <input id="grid-cols" type="number" value="10" class="w-20 bg-slate-800 text-center font-mono text-lg rounded-2xl py-1 px-3 border border-slate-700">
+                </div>
+                <button onclick="resizeGrid()" 
+                        class="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 transition-all text-white font-semibold rounded-3xl flex items-center gap-2 shadow-lg">
+                    <span>Resize Grid</span>
+                </button>
+            </div>
+
+            <!-- Zoom -->
+            <div class="flex items-center bg-slate-900 rounded-3xl px-1 py-1">
+                <button onclick="zoomOut()" class="px-4 py-2 hover:bg-slate-800 rounded-3xl text-xl">−</button>
+                <div class="px-4 font-mono text-sm text-slate-400">100%</div>
+                <button onclick="zoomIn()" class="px-4 py-2 hover:bg-slate-800 rounded-3xl text-xl">+</button>
+            </div>
+
+            <!-- Toggles -->
+            <div class="flex items-center gap-3">
+                <button onclick="toggleGrid()" id="grid-toggle"
+                        class="px-5 py-3 bg-slate-800 hover:bg-slate-700 rounded-3xl flex items-center gap-2 text-sm font-medium">
+                    <span id="grid-label">Grid ON</span>
+                </button>
+                <button onclick="toggleLabels()" id="labels-toggle"
+                        class="px-5 py-3 bg-slate-800 hover:bg-slate-700 rounded-3xl flex items-center gap-2 text-sm font-medium">
+                    <span>🏷️ Labels ON</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Diagram -->
+            <div class="lg:col-span-7">
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-4 shadow-2xl">
+                    <div class="grid-container overflow-auto max-h-[620px] border border-slate-700 rounded-2xl bg-white" style="box-shadow: inset 0 0 40px rgba(15,23,42,0.3)">
+                        <svg id="wirechex-svg" width="100%" height="620" viewBox="0 0 1400 1100" xmlns="http://www.w3.org/2000/svg"></svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar -->
+            <div class="lg:col-span-5 space-y-6">
+                
+                <!-- Add Device -->
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="text-emerald-400">➕</div>
+                        <div>
+                            <div class="font-semibold">Add Device</div>
+                            <div class="text-xs text-emerald-400">v6.0 Production Ready</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="text-xs text-slate-400 mb-1.5">QUICK TEMPLATES</div>
+                        <div class="flex flex-wrap gap-2" id="quick-templates">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-xs text-slate-400">DEVICE NAME</label>
+                            <input id="new-device-name" type="text" placeholder="e.g. GARMIN 8612" 
+                                   class="w-full bg-slate-800 border border-slate-700 rounded-2xl px-4 py-2.5 text-sm">
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400">LOCATION / NOTE</label>
+                            <input id="new-device-location" type="text" placeholder="e.g. *Behind Helm • Starboard" 
+                                   class="w-full bg-slate-800 border border-slate-700 rounded-2xl px-4 py-2.5 text-sm">
+                        </div>
+                    </div>
+
+                    <div class="mt-3 flex items-end gap-3">
+                        <div class="flex-1">
+                            <label class="text-xs text-slate-400">PORTS</label>
+                            <select id="new-device-ports" class="w-full bg-slate-800 border border-slate-700 rounded-2xl px-4 py-2.5 text-sm">
+                                <option value="2">2 ports</option>
+                                <option value="3">3 ports</option>
+                                <option value="4" selected>4 ports</option>
+                                <option value="5">5 ports</option>
+                                <option value="6">6 ports</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400">COLOR</label>
+                            <div onclick="showColorPicker()" class="w-12 h-10 rounded-2xl border border-slate-700 cursor-pointer" style="background:#22c7b0" id="color-preview"></div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3 flex items-center gap-3">
+                        <div class="flex-1">
+                            <div class="text-xs text-slate-400 mb-1">MOUNTING SIDE</div>
+                            <div class="flex gap-2">
+                                <div onclick="setMountSide('left')" id="side-left"
+                                     class="flex-1 py-2.5 bg-emerald-600 text-white text-center rounded-2xl text-sm font-medium cursor-pointer">LEFT</div>
+                                <div onclick="setMountSide('right')" id="side-right"
+                                     class="flex-1 py-2.5 bg-slate-700 hover:bg-slate-600 text-center rounded-2xl text-sm font-medium cursor-pointer">RIGHT</div>
+                            </div>
+                        </div>
+                        <div onclick="addNewDevice()" 
+                             class="px-8 py-3 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 transition-all text-white font-semibold rounded-3xl flex items-center justify-center gap-2 cursor-pointer">
+                            <span>✪ ADD TO DIAGRAM</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manage Devices -->
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="font-semibold flex items-center gap-2">🗂️ Manage Devices</div>
+                        <div class="text-xs text-slate-400" id="device-count">4 devices</div>
+                    </div>
+                    <div id="device-list" class="space-y-2 max-h-[220px] overflow-auto pr-1">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Device Inspector Modal -->
+    <div id="inspector-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl w-full max-w-md mx-4 overflow-hidden">
+            <!-- Content injected by JS -->
+        </div>
+    </div>
+
+    <!-- Color Picker Modal -->
+    <div id="color-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6 w-full max-w-xs">
+            <div class="font-semibold mb-4">Select color</div>
+            <div class="grid grid-cols-4 gap-3" id="color-options">
+                <!-- Populated by JS -->
+            </div>
+            <div class="mt-4 flex justify-end gap-3">
+                <button onclick="hideColorPicker()" class="px-5 py-2 text-sm">Cancel</button>
+                <button onclick="applySelectedColor()" class="px-6 py-2 bg-emerald-600 rounded-2xl text-sm">Set</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/engine.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
