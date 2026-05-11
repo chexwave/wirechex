@@ -1,0 +1,42 @@
+/* WireChex v6.0 - Custom Styles */
+.grid-container {
+    box-shadow: 0 0 0 1px #334155,
+                inset 0 0 60px rgba(15, 23, 42, 0.6);
+}
+
+#wirechex-svg {
+    transition: transform 0.2s ease;
+}
+
+.device-box {
+    transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+    cursor: pointer;
+}
+
+.device-box:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+.device-box.selected {
+    stroke: #eab308 !important;
+    stroke-width: 4px;
+    filter: drop-shadow(0 0 12px rgb(234 179 8 / 0.5));
+}
+
+.wire-path {
+    transition: stroke-width 0.1s ease;
+}
+
+.wire-path:hover {
+    stroke-width: 5px;
+}
+
+@keyframes wirePulse {
+    0%, 100% { stroke-opacity: 1; }
+    50% { stroke-opacity: 0.6; }
+}
+
+.wire-path-highlight {
+    animation: wirePulse 0.7s ease-in-out;
+}
